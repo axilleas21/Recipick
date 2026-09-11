@@ -1,309 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <LinearLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Τι υλικά έχεις στην κουζίνα;"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etSearchIngredient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:paddingBottom="8dp">
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:hint="Αναζήτηση υλικού..."
+        android:inputType="text" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="What ingredients do you have?"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:text="Select all the ingredients available in your kitchen."
-            android:textSize="16sp" />
-
-    </LinearLayout>
-
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvIngredients"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp">
-
-            <CheckBox
-                android:id="@+id/cbApple"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Apple" />
-
-            <CheckBox
-                android:id="@+id/cbAvocado"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Avocado" />
-
-            <CheckBox
-                android:id="@+id/cbBacon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Bacon" />
-
-            <CheckBox
-                android:id="@+id/cbBakingPowder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Baking Powder" />
-
-            <CheckBox
-                android:id="@+id/cbBanana"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Banana" />
-
-            <CheckBox
-                android:id="@+id/cbBread"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Bread" />
-
-            <CheckBox
-                android:id="@+id/cbButter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Butter" />
-
-            <CheckBox
-                android:id="@+id/cbCannedTuna"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Canned Tuna" />
-
-            <CheckBox
-                android:id="@+id/cbCheese"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Cheese" />
-
-            <CheckBox
-                android:id="@+id/cbChicken"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Chicken" />
-
-            <CheckBox
-                android:id="@+id/cbCinnamon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Cinnamon" />
-
-            <CheckBox
-                android:id="@+id/cbCrackers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Crackers" />
-
-            <CheckBox
-                android:id="@+id/cbCucumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Cucumber" />
-
-            <CheckBox
-                android:id="@+id/cbEgg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Egg" />
-
-            <CheckBox
-                android:id="@+id/cbFlour"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Flour" />
-
-            <CheckBox
-                android:id="@+id/cbGarlic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Garlic" />
-
-            <CheckBox
-                android:id="@+id/cbHoney"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Honey" />
-
-            <CheckBox
-                android:id="@+id/cbKetchup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ketchup" />
-
-            <CheckBox
-                android:id="@+id/cbLemon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lemon" />
-
-            <CheckBox
-                android:id="@+id/cbMayonnaise"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Mayonnaise" />
-
-            <CheckBox
-                android:id="@+id/cbMilk"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Milk" />
-
-            <CheckBox
-                android:id="@+id/cbMustard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Mustard" />
-
-            <CheckBox
-                android:id="@+id/cbNoodles"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Noodles" />
-
-            <CheckBox
-                android:id="@+id/cbOliveOil"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Olive Oil" />
-
-            <CheckBox
-                android:id="@+id/cbOlives"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Olives" />
-
-            <CheckBox
-                android:id="@+id/cbOnion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Onion" />
-
-            <CheckBox
-                android:id="@+id/cbOrange"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Orange" />
-
-            <CheckBox
-                android:id="@+id/cbOregano"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Oregano" />
-
-            <CheckBox
-                android:id="@+id/cbParmesan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Parmesan" />
-
-            <CheckBox
-                android:id="@+id/cbPasta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Pasta" />
-
-            <CheckBox
-                android:id="@+id/cbPeanutButter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Peanut Butter" />
-
-            <CheckBox
-                android:id="@+id/cbPotato"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Potato" />
-
-            <CheckBox
-                android:id="@+id/cbRice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Rice" />
-
-            <CheckBox
-                android:id="@+id/cbSalt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Salt" />
-
-            <CheckBox
-                android:id="@+id/cbShrimp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Shrimp" />
-
-            <CheckBox
-                android:id="@+id/cbSoySauce"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Soy Sauce" />
-
-            <CheckBox
-                android:id="@+id/cbStrawberry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Strawberry" />
-
-            <CheckBox
-                android:id="@+id/cbSugar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sugar" />
-
-            <CheckBox
-                android:id="@+id/cbTomato"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tomato" />
-
-            <CheckBox
-                android:id="@+id/cbTortillas"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tortillas" />
-
-            <CheckBox
-                android:id="@+id/cbVinegar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Vinegar" />
-
-            <CheckBox
-                android:id="@+id/cbYogurt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Yogurt" />
-        </LinearLayout>
-    </ScrollView>
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/btnSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:text="Search Recipes" />
+        android:text="Εύρεση Συνταγών" />
 
 </LinearLayout>

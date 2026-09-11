@@ -29,4 +29,7 @@ public class Recipe implements Serializable{
     public String getDescription(){return desc;}
     @Ignore
     public String getInstructions(){return instr;}
+
+    @Ignore
+    public int matchPercentage;
 }

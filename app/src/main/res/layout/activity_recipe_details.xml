@@ -25,13 +25,12 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- GIA NA VALOUME IMAGE META
                 <ImageView
                     android:id="@+id/imgRecipe"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/pasta_placeholder"/>
+                    android:src="@android:drawable/ic_menu_gallery"/>
                     -->
 
                 <TextView

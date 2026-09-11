@@ -1,6 +1,7 @@
 package com.app.recipick;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.app.recipick.data.AppDatabase;
@@ -18,6 +19,8 @@ public class RecipeDetailsActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
+        ImageView imgRecipe = findViewById(R.id.imgRecipe);
+
 
         initializeViews();
         Recipe recipe=(Recipe) getIntent().getSerializableExtra("recipe");
