@@ -13,7 +13,7 @@ import com.app.recipick.data.Recipe.RecipeDao;
 import com.app.recipick.data.Recipe_Ingredients.Recipe_Ingredients;
 import com.app.recipick.data.Recipe_Ingredients.Recipe_IngredientsDao;
 
-@Database(entities={Recipe.class,Ingredient.class},version=10)
+@Database(entities={Recipe.class,Ingredient.class},version=11)
 public abstract class AppDatabase extends RoomDatabase{
     public abstract IngredientDao ingredientDao();
     public abstract RecipeDao recipeDao();
@@ -23,7 +23,7 @@ public abstract class AppDatabase extends RoomDatabase{
     public static AppDatabase getInstance(Context context){
         if(INSTANCE==null){
             synchronized (AppDatabase.class){
-                if (INSTANCE==null){INSTANCE=Room.databaseBuilder(context.getApplicationContext(),AppDatabase.class,"recipickdb.db").createFromAsset("database/recipickdb.db").fallbackToDestructiveMigration().build();}
+                if (INSTANCE==null){INSTANCE=Room.databaseBuilder(context.getApplicationContext(),AppDatabase.class,"recipickdb.db").createFromAsset("database/recipickdb.db").build();}
             }
         }
         return INSTANCE;

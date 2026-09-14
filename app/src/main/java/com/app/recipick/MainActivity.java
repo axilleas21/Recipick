@@ -2,27 +2,27 @@ package com.app.recipick;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.app.recipick.adapters.IngredientAdapter;
 import com.app.recipick.data.AppDatabase;
 import com.app.recipick.data.Ingredient.Ingredient;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText etSearchIngredient;
     private RecyclerView rvIngredients;
     private Button btnSearch;
+    private BottomNavigationView bottomNav;
     private IngredientAdapter adapter;
     private AppDatabase db;
+
+    private android.widget.LinearLayout layoutEmptyState;
+    private androidx.appcompat.widget.SearchView searchViewPantry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,85 +30,112 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_main);
 
-        initializeViews();
-
+        rvIngredients = findViewById(R.id.rvIngredients);
+        btnSearch = findViewById(R.id.btnSearch);
+        bottomNav = findViewById(R.id.bottom_navigation);
         db = AppDatabase.getInstance(this);
 
-        // Ρύθμιση του RecyclerView
         rvIngredients.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new IngredientAdapter();
+        adapter = new IngredientAdapter(true);
         rvIngredients.setAdapter(adapter);
 
-        // Φόρτωση όλων των υλικών από τη βάση
-        loadIngredients();
+        // Swipe to Delete
+        androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
+                new androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT | androidx.recyclerview.widget.ItemTouchHelper.RIGHT) {
 
-        // Λειτουργία Αναζήτησης στο EditText
-        etSearchIngredient.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        return false;
+                    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
-            }
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                        int position = viewHolder.getAdapterPosition();
+                        viewHolder.itemView.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
 
-            @Override
-            public void afterTextChanged(Editable s) {}
+                        Ingredient deletedIngredient = adapter.getIngredientAt(position);
+
+                        new Thread(() -> {
+                            db.ingredientDao().updateSelection(deletedIngredient.id, 0);
+                        }).start();
+
+                        adapter.removeIngredient(position);
+                        checkEmptyState();
+                    }
+                };
+
+        new androidx.recyclerview.widget.ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(rvIngredients);
+
+        btnSearch.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, RecipeListActivity.class);
+            startActivity(intent);
         });
 
-        // Κουμπί Εύρεσης Συνταγών
-        btnSearch.setOnClickListener(view -> {
-            List<Ingredient> selectedIngredients = adapter.getSelectedIngredients();
+        findViewById(R.id.fabAddIngredient).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, AddIngredientActivity.class));
+        });
 
-            new Thread(() -> {
-                SupportSQLiteDatabase sdb = db.getOpenHelper().getWritableDatabase();
-                sdb.beginTransaction();
-                try {
-                    // Μηδενίσμος παλιων επιλογων
-                    sdb.execSQL("UPDATE Ingredient SET selected=0");
+        bottomNav.setSelectedItemId(R.id.nav_ingredients);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_ingredients) {
+                return true;
+            } else if (itemId == R.id.nav_recipes) {
+                Intent intent = new Intent(MainActivity.this, RecipeListActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (itemId == R.id.nav_favorites) {
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            }
+            return false;
+        });
 
-                    // Αποθηκευση νεων επιλεγμένων υλικων
-                    for (Ingredient ingredient : selectedIngredients) {
-                        sdb.execSQL("UPDATE Ingredient SET selected=1 WHERE id=" + ingredient.id);
-                    }
-                    sdb.setTransactionSuccessful();
-                } finally {
-                    sdb.endTransaction();
-                }
+        layoutEmptyState = findViewById(R.id.layoutEmptyState);
+        searchViewPantry = findViewById(R.id.searchViewPantry);
 
-                // Πάμε στην επόμενη οθόνη
-                runOnUiThread(() -> {
-                    Intent intent = new Intent(MainActivity.this, RecipeListActivity.class);
-                    startActivity(intent);
-                });
-            }).start();
+        searchViewPantry.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) { return false; }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                return true;
+            }
         });
     }
 
-    private void initializeViews() {
-        etSearchIngredient = findViewById(R.id.etSearchIngredient);
-        rvIngredients = findViewById(R.id.rvIngredients);
-        btnSearch = findViewById(R.id.btnSearch);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadIngredients();
+        if (bottomNav != null) {
+            bottomNav.setSelectedItemId(R.id.nav_ingredients);
+        }
     }
 
     private void loadIngredients() {
         new Thread(() -> {
-            // Χρησιμοποιούμε SQL query για να πάρουμε όλα τα υλικά,
-            SupportSQLiteDatabase sdb = db.getOpenHelper().getReadableDatabase();
-            android.database.Cursor cursor = sdb.query("SELECT * FROM Ingredient ORDER BY name ASC");
+            List<Ingredient> list = db.ingredientDao().getSelectedIngredients();
 
-            java.util.List<Ingredient> list = new java.util.ArrayList<>();
-            while (cursor.moveToNext()) {
-                Ingredient i = new Ingredient();
-                i.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
-                i.name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-                i.selected = cursor.getInt(cursor.getColumnIndexOrThrow("selected")) == 1;
-                i.imgsrc = cursor.getString(cursor.getColumnIndexOrThrow("imgsrc"));
-                list.add(i);
-            }
-            cursor.close();
-
-            runOnUiThread(() -> adapter.setIngredients(list));
+            runOnUiThread(() -> {
+                adapter.setIngredients(list);
+                checkEmptyState();
+            });
         }).start();
+    }
+
+    private void checkEmptyState() {
+        if (adapter.getItemCount() == 0) {
+            rvIngredients.setVisibility(android.view.View.GONE);
+            layoutEmptyState.setVisibility(android.view.View.VISIBLE);
+        } else {
+            rvIngredients.setVisibility(android.view.View.VISIBLE);
+            layoutEmptyState.setVisibility(android.view.View.GONE);
+        }
     }
 }

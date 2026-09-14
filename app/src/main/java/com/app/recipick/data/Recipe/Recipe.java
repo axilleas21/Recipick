@@ -9,6 +9,10 @@ import java.io.Serializable;
 
 @Entity(tableName="Recipe")
 public class Recipe implements Serializable{
+
+    @Ignore
+    public int missingIngredients;
+
     @PrimaryKey public int id;
 
     @NonNull
@@ -23,6 +27,12 @@ public class Recipe implements Serializable{
     @ColumnInfo(name="instr")
     public String instr;
 
+    @ColumnInfo(name = "imgsrc")
+    public String imgsrc;
+
+    @ColumnInfo(name = "isFavorite")
+    public boolean isFavorite = false;
+
     @Ignore
     public String getName(){return name;}
     @Ignore
@@ -30,6 +40,4 @@ public class Recipe implements Serializable{
     @Ignore
     public String getInstructions(){return instr;}
 
-    @Ignore
-    public int matchPercentage;
 }

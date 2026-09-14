@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ReciPick">
 
+        <activity android:name=".AddIngredientActivity" />
         <activity android:name=".RecipeDetailsActivity"/>
         <activity android:name=".RecipeListActivity"/>
         <activity
