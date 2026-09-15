@@ -61,20 +61,46 @@ public class FavoritesActivity extends AppCompatActivity {
     private void loadFavorites() {
         new Thread(() -> {
             AppDatabase db = AppDatabase.getInstance(this);
-            List<Recipe> favoriteList = db.recipeDao().getFavoriteRecipes();
+            androidx.sqlite.db.SupportSQLiteDatabase sdb = db.getOpenHelper().getReadableDatabase();
+            List<Recipe> favoriteList = new java.util.ArrayList<>();
+
+            String query = "SELECT r.id, r.name, r.desc, r.instr, r.imgsrc, r.isFavorite, " +
+                    "COUNT(ri.ingredientId) AS total_ings, " +
+                    "SUM(CASE WHEN i.selected = 1 THEN 1 ELSE 0 END) AS matched_ings, " +
+                    "(COUNT(ri.ingredientId) - SUM(CASE WHEN i.selected = 1 THEN 1 ELSE 0 END)) AS missing_ings " +
+                    "FROM Recipe r " +
+                    "JOIN Recipe_Ingredients ri ON r.id = ri.recipeId " +
+                    "JOIN Ingredient i ON ri.ingredientId = i.id " +
+                    "WHERE r.isFavorite = 1 " +
+                    "GROUP BY r.id";
+
+            try (android.database.Cursor cursor = sdb.query(query, new Object[0])) {
+                while (cursor.moveToNext()) {
+                    Recipe r = new Recipe();
+                    r.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                    r.name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    r.desc = cursor.getString(cursor.getColumnIndexOrThrow("desc"));
+                    r.instr = cursor.getString(cursor.getColumnIndexOrThrow("instr"));
+                    r.imgsrc = cursor.getString(cursor.getColumnIndexOrThrow("imgsrc"));
+                    r.isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow("isFavorite")) == 1;
+
+                    r.missingIngredients = cursor.getInt(cursor.getColumnIndexOrThrow("missing_ings"));
+
+                    favoriteList.add(r);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             runOnUiThread(() -> {
                 if (favoriteList.isEmpty()) {
-                    // Αν δεν έχει αγαπημένα, δείξε το μήνυμα και κρύψε τη λίστα
                     layoutEmptyState.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                 } else {
-                    // Αν έχει, κρύψε το μήνυμα και γέμισε τη λίστα
                     layoutEmptyState.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
 
                     TheAdapter adapter = new TheAdapter(favoriteList, recipe -> {
-                        // Τι γίνεται όταν πατάμε μια αγαπημένη συνταγή: Ανοίγει τις λεπτομέρειες!
                         android.content.Intent intent = new android.content.Intent(FavoritesActivity.this, RecipeDetailsActivity.class);
                         intent.putExtra("RECIPE_ID", recipe.id);
                         intent.putExtra("RECIPE_NAME", recipe.name);
@@ -84,13 +110,11 @@ public class FavoritesActivity extends AppCompatActivity {
                         intent.putExtra("RECIPE_IMG", recipe.imgsrc);
                         startActivity(intent);
                     });
-
-                    recyclerView.setAdapter(adapter);                    recyclerView.setAdapter(adapter);
+                    recyclerView.setAdapter(adapter);
                 }
             });
         }).start();
     }
-
     // Όταν επιστρέφουμε σε αυτή την οθόνη από μια συνταγή,
     // ξαναφορτώνουμε τη λίστα σε περίπτωση που ο χρήστης αφαίρεσε την καρδούλα!
     @Override
