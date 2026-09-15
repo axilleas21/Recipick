@@ -28,20 +28,27 @@ public class RecipeListActivity extends AppCompatActivity {
         com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
         bottomNav.setSelectedItemId(R.id.nav_recipes);
-
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_ingredients) {
-                startActivity(new Intent(RecipeListActivity.this, MainActivity.class));
+                Intent intent = new Intent(RecipeListActivity.this, MainActivity.class);
+                startActivity(intent);
                 overridePendingTransition(0, 0);
                 finish();
                 return true;
+
             } else if (itemId == R.id.nav_recipes) {
                 return true;
+
             } else if (itemId == R.id.nav_favorites) {
+                Intent intent = new Intent(RecipeListActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+                finish();
                 return true;
             }
+
             return false;
         });
 
@@ -57,8 +64,7 @@ public class RecipeListActivity extends AppCompatActivity {
                 List<Recipe> matchingRecipes = new ArrayList<>();
 
                 //Μετράει πόσα υλικά ζητάει η συνταγή και πόσα λειπουν
-                String query = "SELECT r.id, r.name, r.desc, r.instr, " +
-                        "COUNT(ri.ingredientId) AS total_ings, " +
+                String query = "SELECT r.id, r.name, r.desc, r.instr, r.imgsrc, r.isFavorite, " +                        "COUNT(ri.ingredientId) AS total_ings, " +
                         "SUM(CASE WHEN i.selected = 1 THEN 1 ELSE 0 END) AS matched_ings, " +
                         "(COUNT(ri.ingredientId) - SUM(CASE WHEN i.selected = 1 THEN 1 ELSE 0 END)) AS missing_ings " +
                         "FROM Recipe r " +
@@ -74,6 +80,9 @@ public class RecipeListActivity extends AppCompatActivity {
                         r.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                         r.name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                         r.instr = cursor.getString(cursor.getColumnIndexOrThrow("instr"));
+                        r.imgsrc = cursor.getString(cursor.getColumnIndexOrThrow("imgsrc"));
+                        r.isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow("isFavorite")) == 1;
+
 
                         int missing = cursor.getInt(cursor.getColumnIndexOrThrow("missing_ings"));
                         r.missingIngredients = missing;
@@ -92,7 +101,12 @@ public class RecipeListActivity extends AppCompatActivity {
                         recyclerRecipes.setVisibility(View.VISIBLE);
                         adapter = new TheAdapter(matchingRecipes, recipe -> {
                             Intent intent = new Intent(RecipeListActivity.this, RecipeDetailsActivity.class);
-                            intent.putExtra("recipe", recipe);
+                            intent.putExtra("RECIPE_ID", recipe.id);
+                            intent.putExtra("RECIPE_NAME", recipe.name);
+                            intent.putExtra("RECIPE_DESC", recipe.desc);
+                            intent.putExtra("RECIPE_FAV", recipe.isFavorite);
+                            intent.putExtra("RECIPE_INSTR",recipe.instr);
+                            intent.putExtra("RECIPE_IMG", recipe.imgsrc);
                             startActivity(intent);
                         });
                         recyclerRecipes.setAdapter(adapter);

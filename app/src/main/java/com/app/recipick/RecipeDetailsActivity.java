@@ -1,55 +1,92 @@
 package com.app.recipick;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.app.recipick.data.AppDatabase;
-import com.app.recipick.data.Recipe.Recipe;
-import androidx.sqlite.db.SupportSQLiteDatabase;
-import android.database.Cursor;
-import java.util.ArrayList;
+import com.app.recipick.data.Ingredient.Ingredient;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
-public class RecipeDetailsActivity extends AppCompatActivity{
-    private TextView txtRecipeName;private TextView txtDescription;
-    private TextView txtIngredients;private TextView txtInstructions;
+public class RecipeDetailsActivity extends AppCompatActivity {
+
+    private int recipeId;
+    private boolean isFavorite;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
-        ImageView imgRecipe = findViewById(R.id.imgRecipe);
 
+        TextView tvName = findViewById(R.id.tvDetailName);
+        TextView tvDesc = findViewById(R.id.tvDetailDesc);
+        TextView tvInstructions = findViewById(R.id.tvDetailInstructions);
+        LinearLayout layoutIngredients = findViewById(R.id.layoutIngredientsList);
+        FloatingActionButton fabFavorite = findViewById(R.id.fabDetailFavorite);
+        ImageView ivImage = findViewById(R.id.ivDetailImage);
 
-        initializeViews();
-        Recipe recipe=(Recipe) getIntent().getSerializableExtra("recipe");
-        if(recipe!=null){
-            txtRecipeName.setText(recipe.getName());           // auta to vazoun sto ui
-            txtDescription.setText(recipe.getDescription());
-            txtInstructions.setText(recipe.getInstructions());
+        recipeId = getIntent().getIntExtra("RECIPE_ID", -1);
+        String name = getIntent().getStringExtra("RECIPE_NAME");
+        String desc = getIntent().getStringExtra("RECIPE_DESC");
+        isFavorite = getIntent().getBooleanExtra("RECIPE_FAV", false);
+        String instructions = getIntent().getStringExtra("RECIPE_INSTR");
 
-            AppDatabase db=AppDatabase.getInstance(this);
-            new Thread(()->{
-                List<String> ingredients=new ArrayList<>();
-                SupportSQLiteDatabase sdb=db.getOpenHelper().getReadableDatabase();
-                String query="SELECT Ingredient.name FROM Ingredient " +
-                        "JOIN Recipe_Ingredients ON Ingredient.id=Recipe_Ingredients.ingredientId " +
-                        "WHERE Recipe_Ingredients.recipeId=?";
-                try (Cursor cursor=sdb.query(query,new Object[]{recipe.id})){while (cursor.moveToNext()){ingredients.add(cursor.getString(0));}}
-                runOnUiThread(()->{
-                    StringBuilder ingredientsText=new StringBuilder();
-                    for(String ingredient:ingredients){ingredientsText.append("- ").append(ingredient).append("\n");}
-                    txtIngredients.setText(ingredientsText.toString());
-                });
+        tvName.setText(name);
+        tvDesc.setText(desc);
+        tvInstructions.setText(instructions);
+
+        updateFavoriteUI(fabFavorite);
+        fabFavorite.setOnClickListener(v -> {
+            isFavorite = !isFavorite;
+            updateFavoriteUI(fabFavorite);
+            new Thread(() -> {
+                AppDatabase db = AppDatabase.getInstance(this);
+                db.recipeDao().updateFavorite(recipeId, isFavorite);
             }).start();
-        }
+        });
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbarDetails);
+        toolbar.setNavigationOnClickListener(v -> finish());
+
+        new Thread(() -> {
+            AppDatabase db = AppDatabase.getInstance(this);
+            List<Ingredient> recipeIngredients = db.ingredientDao().getIngredientsForRecipe(recipeId);
+
+            runOnUiThread(() -> {
+                layoutIngredients.removeAllViews();
+
+                for (Ingredient ingredient : recipeIngredients) {
+                    TextView tv = new TextView(this);
+
+                    // Ελέγχουμε αν το υλικό υπάρχει στο ψυγείο μας (1 = το έχουμε)
+                    boolean hasIngredient = ingredient.selected;
+
+                    if (hasIngredient) {
+                        tv.setText(ingredient.getName());
+                        tv.setTextColor(Color.parseColor("#2E7D32"));
+                    } else {
+                        tv.setText("🛒  " + ingredient.getName());
+                        tv.setTextColor(Color.parseColor("#E65100"));
+                    }
+
+                    tv.setTextSize(16f);
+                    tv.setPadding(0, 8, 0, 16);
+                    layoutIngredients.addView(tv);
+                }
+            });
+        }).start();
     }
 
-    private void initializeViews(){
-        txtRecipeName=findViewById(R.id.txtRecipeName);
-        txtDescription=findViewById(R.id.txtDescription);
-        txtIngredients=findViewById(R.id.txtIngredients);
-        txtInstructions=findViewById(R.id.txtInstructions);
+    private void updateFavoriteUI(FloatingActionButton fab) {
+        if (isFavorite) {
+            fab.setImageResource(R.drawable.baseline_favorite_24);
+            fab.setColorFilter(Color.parseColor("#E91E63"));
+        } else {
+            fab.setImageResource(R.drawable.baseline_favorite_border_24);
+            fab.setColorFilter(Color.parseColor("#757575"));
+        }
     }
 }

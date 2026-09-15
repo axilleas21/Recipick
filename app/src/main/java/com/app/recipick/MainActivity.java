@@ -78,19 +78,25 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setSelectedItemId(R.id.nav_ingredients);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
+
             if (itemId == R.id.nav_ingredients) {
                 return true;
+
             } else if (itemId == R.id.nav_recipes) {
                 Intent intent = new Intent(MainActivity.this, RecipeListActivity.class);
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 finish();
                 return true;
+
             } else if (itemId == R.id.nav_favorites) {
+                Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
+                startActivity(intent);
                 overridePendingTransition(0, 0);
                 finish();
                 return true;
             }
+
             return false;
         });
 

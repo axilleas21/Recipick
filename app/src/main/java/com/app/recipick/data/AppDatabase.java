@@ -13,7 +13,7 @@ import com.app.recipick.data.Recipe.RecipeDao;
 import com.app.recipick.data.Recipe_Ingredients.Recipe_Ingredients;
 import com.app.recipick.data.Recipe_Ingredients.Recipe_IngredientsDao;
 
-@Database(entities={Recipe.class,Ingredient.class},version=11)
+@Database(entities={Recipe.class,Ingredient.class, Recipe_Ingredients.class},version=12)
 public abstract class AppDatabase extends RoomDatabase{
     public abstract IngredientDao ingredientDao();
     public abstract RecipeDao recipeDao();

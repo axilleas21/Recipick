@@ -12,4 +12,6 @@ public interface RecipeDao extends GeneralDao<Recipe>{
     void updateFavorite(int recipeId, boolean favorite);
     @androidx.room.Query("SELECT * FROM Recipe WHERE isFavorite = 1")
     List<Recipe> getFavoriteRecipes();
+
+
 }
