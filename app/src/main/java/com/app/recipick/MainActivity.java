@@ -2,6 +2,7 @@ package com.app.recipick;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -51,6 +52,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                         int position = viewHolder.getAdapterPosition();
+
+                        //ακυρωση αν ειναι ηδη σε mode διαγραφης
+                        if (adapter.isMultiSelectMode()) {
+                            adapter.notifyItemChanged(position);
+                            return;
+                        }
+
                         viewHolder.itemView.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
 
                         Ingredient deletedIngredient = adapter.getIngredientAt(position);
@@ -113,6 +121,51 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        Button btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
+        View fabAddIngredient = findViewById(R.id.fabAddIngredient);
+
+        // Όταν μπαίνουμε σε Λειτουργία Διαγραφής, κρύβουμε τα άλλα κουμπιά και εμφανίζουμε το κόκκινο
+        adapter.setOnMultiSelectListener((isMultiSelect, count) -> {
+            btnDeleteSelected.setVisibility(isMultiSelect ? android.view.View.VISIBLE : android.view.View.GONE);
+            fabAddIngredient.setVisibility(isMultiSelect ? android.view.View.GONE : android.view.View.VISIBLE);
+
+            if (isMultiSelect) {
+                btnSearch.setVisibility(android.view.View.GONE);
+                btnDeleteSelected.setText("Delete (" + count + ")");
+            } else {
+
+                checkEmptyState();
+            }
+        });
+
+
+
+        btnDeleteSelected.setOnClickListener(v -> {
+            List<Ingredient> toDelete = adapter.getSelectedForDeletion();
+            new Thread(() -> {
+                for (Ingredient ing : toDelete) {
+                    db.ingredientDao().updateSelection(ing.id, 0); // Διαγραφή
+                }
+                runOnUiThread(() -> {
+                    adapter.clearSelection();
+                    loadIngredients();
+                    android.widget.Toast.makeText(MainActivity.this, "Deleted successfully!", android.widget.Toast.LENGTH_SHORT).show();
+                });
+            }).start();
+        });
+
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (adapter != null && adapter.isMultiSelectMode()) {
+            adapter.clearSelection();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -139,9 +192,14 @@ public class MainActivity extends AppCompatActivity {
         if (adapter.getItemCount() == 0) {
             rvIngredients.setVisibility(android.view.View.GONE);
             layoutEmptyState.setVisibility(android.view.View.VISIBLE);
+            btnSearch.setVisibility(android.view.View.GONE); // ΝΕΟ: Κρύβει το κουμπί
         } else {
             rvIngredients.setVisibility(android.view.View.VISIBLE);
             layoutEmptyState.setVisibility(android.view.View.GONE);
+
+            if (!adapter.isMultiSelectMode()) {
+                btnSearch.setVisibility(android.view.View.VISIBLE);
+            }
         }
     }
 }

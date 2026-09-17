@@ -52,7 +52,7 @@
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:src="@android:drawable/ic_menu_myplaces"
+                android:src="@drawable/baseline_kitchen_24"
                 app:tint="#BDBDBD" />
 
             <TextView
@@ -73,6 +73,17 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/btnDeleteSelected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/btnSearch"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="#D32F2F"
+            android:text="Delete Selected"
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
+
+        <Button
             android:id="@+id/btnSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,6 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@id/btnSearch"
             android:layout_alignParentEnd="true"
+            android:layout_alignWithParentIfMissing="true"
             android:layout_marginBottom="16dp"
             android:src="@android:drawable/ic_input_add"
             app:tint="@android:color/white" />

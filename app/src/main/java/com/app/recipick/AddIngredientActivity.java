@@ -24,6 +24,13 @@ public class AddIngredientActivity extends AppCompatActivity {
         setContentView(R.layout.ingredients_selection);
         setTitle("Add Ingredients");
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
+        android.widget.ImageView ivBack = findViewById(R.id.ivBack);
+        ivBack.setOnClickListener(v -> finish());
+
         db = AppDatabase.getInstance(this);
         RecyclerView rvAdd = findViewById(R.id.rvAddIngredients);
         EditText etSearch = findViewById(R.id.etSearchNew);
@@ -62,5 +69,11 @@ public class AddIngredientActivity extends AppCompatActivity {
             List<Ingredient> list = db.ingredientDao().getUnselectedIngredients();
             runOnUiThread(() -> adapter.setIngredients(list));
         }).start();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

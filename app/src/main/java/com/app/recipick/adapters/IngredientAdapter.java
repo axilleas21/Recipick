@@ -20,7 +20,35 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     // μεταβλητή που ελέγχει αν είμαστε στα υλικα που εχουμε ή στην αναζήτηση για προσθηκη υλικων
     private boolean isPantryMode;
 
-    // ΝΕΟ: Constructor
+    private List<Ingredient> selectedForDeletion = new ArrayList<>();
+    private boolean isMultiSelectMode = false;
+    private OnMultiSelectListener multiSelectListener;
+
+    public interface OnMultiSelectListener {
+        void onSelectionChanged(boolean isMultiSelect, int selectedCount);
+    }
+
+    public void setOnMultiSelectListener(OnMultiSelectListener listener) {
+        this.multiSelectListener = listener;
+    }
+
+    public List<Ingredient> getSelectedForDeletion() {
+        return selectedForDeletion;
+    }
+
+    public boolean isMultiSelectMode() {
+        return isMultiSelectMode;
+    }
+
+    public void clearSelection() {
+        isMultiSelectMode = false;
+        selectedForDeletion.clear();
+        if (multiSelectListener != null) {
+            multiSelectListener.onSelectionChanged(false, 0);
+        }
+        notifyDataSetChanged();
+    }
+
     public IngredientAdapter(boolean isPantryMode) {
         this.isPantryMode = isPantryMode;
     }
@@ -59,7 +87,6 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         if (isPantryMode) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pantry, parent, false);
             return new ViewHolder(view);
@@ -75,22 +102,60 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
         holder.textView.setText(currentItem.getName());
 
         if (isPantryMode) {
+            com.google.android.material.card.MaterialCardView card = (com.google.android.material.card.MaterialCardView) holder.itemView;
+
+            // Αλλαγή χρώματος αν είναι επιλεγμένο για διαγραφή
+            if (selectedForDeletion.contains(currentItem)) {
+                card.setCardBackgroundColor(android.graphics.Color.parseColor("#FFCDD2"));
+            } else {
+                card.setCardBackgroundColor(android.graphics.Color.WHITE); // Λευκό
+            }
+
+            // Παρατεταμένο κλικ για να ξεκινήσει η επιλογή
+            holder.itemView.setOnLongClickListener(v -> {
+                if (!isMultiSelectMode) {
+                    v.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
+                    isMultiSelectMode = true;
+                    selectedForDeletion.add(currentItem);
+
+                    if (multiSelectListener != null) {
+                        multiSelectListener.onSelectionChanged(true, selectedForDeletion.size());
+                    }
+
+                    notifyItemChanged(holder.getAdapterPosition());
+                }
+                return true;
+            });
+
+            // Απλό κλικ για να επιλέγει κι άλλα υλικά
+            holder.itemView.setOnClickListener(v -> {
+                if (isMultiSelectMode) {
+                    if (selectedForDeletion.contains(currentItem)) {
+                        selectedForDeletion.remove(currentItem);
+                        if (selectedForDeletion.isEmpty()) { // Αν τα ξε-τίκαρε όλα, βγες από το mode
+                            isMultiSelectMode = false;
+                        }
+                    } else {
+                        selectedForDeletion.add(currentItem);
+                    }
+
+                    if (multiSelectListener != null) {
+                        multiSelectListener.onSelectionChanged(isMultiSelectMode, selectedForDeletion.size());
+                    }
+
+                    notifyItemChanged(holder.getAdapterPosition());
+                }
+            });
+
         } else {
             CheckedTextView checkedView = (CheckedTextView) holder.textView;
             checkedView.setChecked(currentItem.isSelected());
 
-            android.content.Context context = holder.itemView.getContext();
-
             checkedView.setOnClickListener(v -> {
                 boolean isNowChecked = !checkedView.isChecked();
                 checkedView.setChecked(isNowChecked);
-                currentItem.selected = isNowChecked;
 
-                new Thread(() -> {
-                    com.app.recipick.data.AppDatabase database = com.app.recipick.data.AppDatabase.getInstance(context);
-                    int selectedValue = isNowChecked ? 1 : 0;
-                    database.ingredientDao().updateSelection(currentItem.id, selectedValue);
-                }).start();
+                currentItem.selected = isNowChecked;
             });
         }
     }
