@@ -22,5 +22,5 @@ dependencyResolutionManagement{
     }
 }
 
-rootProject.name="ReciPick"
+rootProject.name="Recipick"
 include(":app")

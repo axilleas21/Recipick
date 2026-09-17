@@ -3,7 +3,7 @@ package com.app.recipick;
 import android.app.Application;
 import com.app.recipick.data.AppDatabase;
 
-public class ReciPickApplication extends Application{
+public class RecipickApplication extends Application{
     private AppDatabase database;
 
     @Override
