@@ -95,10 +95,11 @@
             android:id="@+id/fabAddIngredient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignWithParentIfMissing="true"
             android:layout_above="@id/btnSearch"
             android:layout_alignParentEnd="true"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
             android:src="@android:drawable/ic_input_add"
             app:tint="@android:color/white" />
 

@@ -23,8 +23,8 @@
                 android:id="@+id/ivRecipeImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
                 android:background="#E0E0E0"
+                android:scaleType="centerCrop"
                 android:src="@android:drawable/ic_menu_gallery" />
         </androidx.cardview.widget.CardView>
 
