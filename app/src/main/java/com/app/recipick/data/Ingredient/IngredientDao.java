@@ -17,9 +17,6 @@ public interface IngredientDao extends GeneralDao<Ingredient>{
     @Query("SELECT * FROM Ingredient WHERE selected = 0 ORDER BY name ASC")
     List<Ingredient> getUnselectedIngredients();
 
-    @Query("SELECT * FROM Ingredient ORDER BY name ASC")
-    List<Ingredient> getAllIngredients();
-
     @Query("SELECT Ingredient.* FROM Ingredient INNER JOIN Recipe_Ingredients ON Ingredient.id = Recipe_Ingredients.ingredientId WHERE Recipe_Ingredients.recipeId = :recipeId")
     List<Ingredient> getIngredientsForRecipe(int recipeId);
 }

@@ -35,9 +35,4 @@ public class Recipe implements Serializable{
 
     @Ignore
     public String getName(){return name;}
-    @Ignore
-    public String getDescription(){return desc;}
-    @Ignore
-    public String getInstructions(){return instr;}
-
 }

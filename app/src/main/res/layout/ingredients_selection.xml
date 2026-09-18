@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="25dp"
         android:layout_marginBottom="16dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Add Ingredients"
+            android:text="Pick Ingredients"
             android:textColor="#212121"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/layoutHeader"
-        android:hint="Search and add ingredients..."
+        android:hint="Search and pick ingredients..."
         android:minHeight="48dp"
         android:padding="12dp" />
 

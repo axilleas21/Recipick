@@ -19,7 +19,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="8dp"
             android:text="My Kitchen"
             android:textColor="#212121"
@@ -70,7 +70,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap the + button to add ingredients."
+                android:text="Tap the + button to pick ingredients."
                 android:textColor="#BDBDBD"
                 android:textSize="14sp" />
         </LinearLayout>
