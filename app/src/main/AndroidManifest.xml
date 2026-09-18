@@ -13,14 +13,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Recipick">
 
-        <activity android:name=".AddIngredientActivity" />
-        <activity android:name=".RecipeDetailsActivity"/>
-        <activity android:name=".RecipeListActivity"/>
+        <activity
+            android:name=".AddIngredientActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".RecipeDetailsActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".RecipeListActivity"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".FavoritesActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -30,11 +42,3 @@
         </activity>
     </application>
 </manifest>
-
-
-
-
-
-
-
-
