@@ -14,7 +14,10 @@ import java.util.List;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.ViewHolder> {
 
+    // Η πλήρης λίστα με τα υλικά της βάσης
     private List<Ingredient> allIngredients = new ArrayList<>();
+
+    // Η λίστα που εμφανίζεται δυναμικά στην οθόνη (χρησιμοποιείται για την αναζήτηση/φιλτράρισμα)
     private List<Ingredient> displayedIngredients = new ArrayList<>();
 
     // μεταβλητή που ελέγχει αν είμαστε στα υλικα που εχουμε ή στην αναζήτηση για προσθηκη υλικων
@@ -40,6 +43,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
         return isMultiSelectMode;
     }
 
+    //καθαριζει τις επιλογες του χρηστη και βγαινει απο τη λειτουργια διαγραφης
     public void clearSelection() {
         isMultiSelectMode = false;
         selectedForDeletion.clear();
@@ -74,6 +78,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
         notifyDataSetChanged();
     }
 
+    //υλικα που εχουν επιλεγείστο add mode
     public List<Ingredient> getSelectedIngredients() {
         List<Ingredient> selected = new ArrayList<>();
         for (Ingredient ingredient : allIngredients) {
@@ -87,10 +92,13 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        // Φορτώνει διαφορετικό layout XML ανάλογα με το αν είμαστε στο Pantry Mode ή στο Add Mode
         if (isPantryMode) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pantry, parent, false);
             return new ViewHolder(view);
         } else {
+            // Χρήση ενσωματωμένου layout του Android για λίστα με checkboxes
             View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_multiple_choice, parent, false);
             return new ViewHolder(view);
         }
@@ -111,7 +119,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
                 card.setCardBackgroundColor(android.graphics.Color.WHITE); // Λευκό
             }
 
-            // Παρατεταμένο κλικ για να ξεκινήσει η επιλογή
+            // Παρατεταμένο κλικ για να ξεκινήσει η επιλογή για διαγραφη
             holder.itemView.setOnLongClickListener(v -> {
                 if (!isMultiSelectMode) {
                     v.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
@@ -132,7 +140,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
                 if (isMultiSelectMode) {
                     if (selectedForDeletion.contains(currentItem)) {
                         selectedForDeletion.remove(currentItem);
-                        if (selectedForDeletion.isEmpty()) { // Αν τα ξε-τίκαρε όλα, βγες από το mode
+                        if (selectedForDeletion.isEmpty()) { // Αν ο χρήστης αποεπιλέξει όλα τα υλικά, βγαίνουμε από το Multi-Select mode
                             isMultiSelectMode = false;
                         }
                     } else {
@@ -177,6 +185,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
         }
     }
 
+    // Επιστρέφει ένα συγκεκριμένο υλικό βάσει θέσης (χρησιμοποιείται στο Swipe-to-Delete στο Activity)
     public Ingredient getIngredientAt(int position) {
         return displayedIngredients.get(position);
     }
@@ -188,6 +197,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
         notifyItemRemoved(position);
     }
 
+    // Επιλέγει όλα τα υλικά που φαίνονται στην οθόνη για μαζική διαγραφή
     public void selectAll() {
         isMultiSelectMode = true;
         selectedForDeletion.clear();

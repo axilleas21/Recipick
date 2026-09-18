@@ -11,6 +11,7 @@ import com.app.recipick.data.Ingredient.Ingredient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
+//οθόνη που δείχνει τις λεπτομέρειες της συνταγής
 public class RecipeDetailsActivity extends AppCompatActivity {
 
     private int recipeId;
@@ -29,6 +30,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         // Εδώ είναι το σωστό ImageView σου
         ImageView ivImage = findViewById(R.id.ivDetailImage);
 
+        // Διαβάζουμε τα δεδομένα που μας έστειλε το προηγούμενο Activity λίστα ή αγαπημένα
         recipeId = getIntent().getIntExtra("RECIPE_ID", -1);
         String name = getIntent().getStringExtra("RECIPE_NAME");
         String desc = getIntent().getStringExtra("RECIPE_DESC");
@@ -39,7 +41,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         tvDesc.setText(desc);
         tvInstructions.setText(instructions);
 
-        // Δυναμική φόρτωση της εικόνας
+        // Δυναμική φόρτωση της εικόνας (π.χ. recipe_1) βάσει του ID της συνταγής
         if (recipeId != -1) {
             String imageName = "recipe_" + recipeId;
             int resId = getResources().getIdentifier(imageName, "drawable", getPackageName());
@@ -51,6 +53,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
             }
         }
 
+        // Διαχείριση κλικ στην fab καρδια
         updateFavoriteUI(fabFavorite);
         fabFavorite.setOnClickListener(v -> {
             isFavorite = !isFavorite;
@@ -64,6 +67,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbarDetails);
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        // Φορτώνουμε τα υλικά της συγκεκριμένης συνταγής από τη βάση δεδομένων
         new Thread(() -> {
             AppDatabase db = AppDatabase.getInstance(this);
             List<Ingredient> recipeIngredients = db.ingredientDao().getIngredientsForRecipe(recipeId);
@@ -93,6 +97,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         }).start();
     }
 
+    //συνάρτηση για ανανέωση της καρδιάς αγαπημένων
     private void updateFavoriteUI(FloatingActionButton fab) {
         if (isFavorite) {
             fab.setImageResource(R.drawable.baseline_favorite_24);

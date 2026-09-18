@@ -13,6 +13,8 @@ import com.app.recipick.data.AppDatabase;
 import com.app.recipick.data.Ingredient.Ingredient;
 import java.util.List;
 
+
+//οθονη προσθήκης νέων υλικών
 public class AddIngredientActivity extends AppCompatActivity {
 
     private IngredientAdapter adapter;
@@ -28,6 +30,7 @@ public class AddIngredientActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+        //back button
         android.widget.ImageView ivBack = findViewById(R.id.ivBack);
         ivBack.setOnClickListener(v -> finish());
 
@@ -37,6 +40,8 @@ public class AddIngredientActivity extends AppCompatActivity {
         Button btnSave = findViewById(R.id.btnSavePantry);
 
         rvAdd.setLayoutManager(new LinearLayoutManager(this));
+
+        //is pantru mode=false άρα έχουμε το layout με τα checkboxes
         adapter = new IngredientAdapter(false);
         rvAdd.setAdapter(adapter);
 
@@ -64,6 +69,7 @@ public class AddIngredientActivity extends AppCompatActivity {
         });
     }
 
+    //φορτώνει όλα τα υλικά που δεν έχει ο χρήστης ασύγχρονα
     private void loadAllIngredients() {
         new Thread(() -> {
             List<Ingredient> list = db.ingredientDao().getUnselectedIngredients();

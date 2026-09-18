@@ -12,9 +12,13 @@ import com.app.recipick.data.AppDatabase;
 import com.app.recipick.data.Recipe.Recipe;
 import java.util.List;
 
+
+//δείχνει τις αγαπημένες συνταγές του χρηστη
 public class FavoritesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+
+    //αν ο χρληστης δεν έχει αγαπημένα
     private LinearLayout layoutEmptyState;
 
     @Override
@@ -28,8 +32,8 @@ public class FavoritesActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
 
 
+        //διαχείριση ottom navigation bar
         com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-
         bottomNav.setSelectedItemId(R.id.nav_favorites);
 
         bottomNav.setOnItemSelectedListener(item -> {
@@ -58,12 +62,20 @@ public class FavoritesActivity extends AppCompatActivity {
         loadFavorites();
     }
 
+    //φέρνει τις αγαπημένες συνταγές του χρηστη
     private void loadFavorites() {
         new Thread(() -> {
             AppDatabase db = AppDatabase.getInstance(this);
             androidx.sqlite.db.SupportSQLiteDatabase sdb = db.getOpenHelper().getReadableDatabase();
             List<Recipe> favoriteList = new java.util.ArrayList<>();
 
+
+            // Το Query:
+            //Παίρνει τα στοιχεία της συνταγής.
+            //Μετράει πόσα υλικά έχει συνολικά η συνταγή (total_ings).
+            //Μετράει πόσα από αυτά τα υλικά έχει επιλέξει ο χρήστης ότι έχει (matched_ings).
+            //Υπολογίζει τη διαφορά (missing_ings) για να εμφανίσει το σωστό μήνυμα στην κάρτα.
+            //Φιλτράρει ώστε να φέρει μόνο όσες συνταγές είναι αγαπημένες.
             String query = "SELECT r.id, r.name, r.desc, r.instr, r.imgsrc, r.isFavorite, " +
                     "COUNT(ri.ingredientId) AS total_ings, " +
                     "SUM(CASE WHEN i.selected = 1 THEN 1 ELSE 0 END) AS matched_ings, " +

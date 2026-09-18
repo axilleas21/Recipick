@@ -13,6 +13,12 @@ import com.app.recipick.R;
 import com.app.recipick.data.Recipe.Recipe;
 import java.util.List;
 
+
+/**
+ * Adapter για την εμφάνιση της λίστας των συνταγών στο RecipeListActivity και στο FavoritesActivity.
+ * Αναλαμβάνει τη φόρτωση των εικόνων, τον υπολογισμό των ελλείψεων σε υλικά
+ * και τη διαχείριση της λειτουργίας των αγαπημένων.
+ */
 public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
 
     private List<Recipe> recipes;
@@ -41,12 +47,13 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
         holder.tvRecipeName.setText(recipe.name);
         holder.tvRecipeDesc.setText(recipe.desc);
 
+        // Αλλάζουμε τη διαφάνεια της κάρτας και το χρώμα και κείμενο ανάλογα με τα υλικά που λείπουν.
         if (recipe.missingIngredients == 0) {
-            holder.itemView.setAlpha(1.0f);
+            holder.itemView.setAlpha(1.0f); // Πλήρως ορατό αν εχει ολα τα υλικα
             holder.tvRecipeStatus.setText("Ready to cook!");
             holder.tvRecipeStatus.setTextColor(Color.parseColor("#4CAF50"));
         } else if (recipe.missingIngredients == 1) {
-            holder.itemView.setAlpha(0.6f);
+            holder.itemView.setAlpha(0.6f); // Ελαφρώς ξεθωριασμένο αν λείπουν υλικά
             holder.tvRecipeStatus.setText("Missing " + recipe.missingIngredients + " ingredient");
             holder.tvRecipeStatus.setTextColor(Color.parseColor("#FF9800"));
         } else {
@@ -63,7 +70,7 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
             holder.ivFavorite.setColorFilter(Color.parseColor("#757575")); // Γκρι
         }
 
-
+        // Διαβάζουμε το όνομα του αρχείου της εικόνας δυναμικά (πχ recipe_1) από τον φάκελο drawable
         String imageName = "recipe_" + recipe.id;
         Context context = holder.itemView.getContext();
 
@@ -80,6 +87,7 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
                     .into(holder.ivRecipeImage);
         }
 
+        //οριζει τι γινεται αν πατηθει η καρδια για να μπει στα αγαπημένα
         holder.ivFavorite.setOnClickListener(v -> {
             recipe.isFavorite = !recipe.isFavorite;
 
@@ -91,6 +99,7 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
                 holder.ivFavorite.setColorFilter(Color.parseColor("#757575"));
             }
 
+            //αποθήκευση στη βάση
             new Thread(() -> {
                 com.app.recipick.data.AppDatabase db = com.app.recipick.data.AppDatabase.getInstance(holder.itemView.getContext());
                 db.recipeDao().updateFavorite(recipe.id, recipe.isFavorite);
@@ -105,6 +114,8 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
         return recipes.size();
     }
 
+
+    //συνδεση xml με τη Java
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvRecipeName;

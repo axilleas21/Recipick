@@ -14,6 +14,11 @@ import com.app.recipick.data.Ingredient.Ingredient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
 
+/*
+       η αρχική οθόνη της εφαρμογής.
+       δείχνει τα υλικά που έχει ο χρήστης και επιτρέπει αναζήτηση,
+       διαγραφή με swipe και με πολλαπλή επιλογή
+ */
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView rvIngredients;
@@ -31,12 +36,16 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_main);
 
+
+        //αρχικοποίηση UI στοιχείων και βάσης δεδομένων
         rvIngredients = findViewById(R.id.rvIngredients);
         btnSearch = findViewById(R.id.btnSearch);
         bottomNav = findViewById(R.id.bottom_navigation);
         db = AppDatabase.getInstance(this);
 
         rvIngredients.setLayoutManager(new LinearLayoutManager(this));
+
+        //to true δείχνει οτι είμαστε στη σελίδα με τα επιλεγμένα υλικά (χωρίς checkboxes)
         adapter = new IngredientAdapter(true);
         rvIngredients.setAdapter(adapter);
 
@@ -74,15 +83,18 @@ public class MainActivity extends AppCompatActivity {
 
         new androidx.recyclerview.widget.ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(rvIngredients);
 
+        // Κουμπί αναζήτησης συνταγών, πάει στη λίστα με τις συνταγες
         btnSearch.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, RecipeListActivity.class);
             startActivity(intent);
         });
 
+        // Κουμπί Floating Action για προσθήκη νέων υλικών
         findViewById(R.id.fabAddIngredient).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, AddIngredientActivity.class));
         });
 
+        //bottom navigation bar
         bottomNav.setSelectedItemId(R.id.nav_ingredients);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -111,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         layoutEmptyState = findViewById(R.id.layoutEmptyState);
         searchViewPantry = findViewById(R.id.searchViewPantry);
 
+        //real time φ   ιλτράρισμα λίστας
         searchViewPantry.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) { return false; }
@@ -122,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //λογική πολλαπλής επιλογής και διαγραφής
         android.widget.LinearLayout layoutMultiSelectActions = findViewById(R.id.layoutMultiSelectActions);
         Button btnSelectAll = findViewById(R.id.btnSelectAll);
         Button btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
@@ -133,14 +147,14 @@ public class MainActivity extends AppCompatActivity {
             fabAddIngredient.setVisibility(isMultiSelect ? android.view.View.GONE : android.view.View.VISIBLE);
 
             if (isMultiSelect) {
-                btnSearch.setVisibility(android.view.View.GONE);
-                btnDeleteSelected.setText("Delete (" + count + ")");
+                btnSearch.setVisibility(android.view.View.GONE);  //κρύβουμε το κουμπί
+                btnDeleteSelected.setText("Delete (" + count + ")"); //ανανέωση αριθμού διαγραφόμενων υλικών
             } else {
                 checkEmptyState();
             }
         });
 
-       // Λειτουργία Select All
+       // Λειτουργία Select All για επιλογ΄΄η όλων των υλικών για διαγραφή
         btnSelectAll.setOnClickListener(v -> {
             adapter.selectAll();
         });
@@ -163,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //αν πατηθεί το κουμπί πίσω του κινητού τότε αν ειναι σε λειτουργία πολλαπλης διαγραφής απλώς κλείνει αυτη η λειτουργία
     @Override
     public void onBackPressed() {
         if (adapter != null && adapter.isMultiSelectMode()) {
@@ -172,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //ανανεώνει τη λίστα των επιλεγμπένων κάθε φορά που επιστρέφουμε στην οθονη
     @Override
     protected void onResume() {
         super.onResume();
@@ -181,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //φέρνει τα επιλεγμένα υλικά του χρήστη
     private void loadIngredients() {
         new Thread(() -> {
             List<Ingredient> list = db.ingredientDao().getSelectedIngredients();
@@ -192,11 +209,12 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    //ελέγχει αν ο χρήστης έχει υλικά, αν δεν έχει κρύβει το κουμπί αναζήτησης και δείχνει την empty state οθόνη
     private void checkEmptyState() {
         if (adapter.getItemCount() == 0) {
             rvIngredients.setVisibility(android.view.View.GONE);
             layoutEmptyState.setVisibility(android.view.View.VISIBLE);
-            btnSearch.setVisibility(android.view.View.GONE); // ΝΕΟ: Κρύβει το κουμπί
+            btnSearch.setVisibility(android.view.View.GONE); //Κρύβει το κουμπί
         } else {
             rvIngredients.setVisibility(android.view.View.VISIBLE);
             layoutEmptyState.setVisibility(android.view.View.GONE);

@@ -16,11 +16,19 @@ import com.app.recipick.data.Recipe.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Η οθόνη Λίστας Συνταγών, υπολογίζει δυναμικά ποιες συνταγές
+    ταιριάζουν με τα υλικά που έχει ο χρήστης
+    Διαθέτει ένα ρυθμιζόμενο Slider για να φιλτράρει τα αποτελέσματα
+    με βάση τον μέγιστο αριθμό ελλείψεων σε υλικά.
+ */
 public class RecipeListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerRecipes;
     private TheAdapter adapter;
     private AppDatabase db;
+
+    // Εμφανίζεται αν καμία συνταγή δεν ικανοποιεί τα κριτήρια του φίλτρου
     private View layoutEmptyRecipes;
 
     @Override
@@ -55,13 +63,14 @@ public class RecipeListActivity extends AppCompatActivity {
         layoutEmptyRecipes = findViewById(R.id.layoutEmptyRecipes);
         recyclerRecipes.setLayoutManager(new LinearLayoutManager(this));
 
-        //  ΣΥΡΟΜΕΝΗ ΜΠΑΡΑ
+        //  συρόμενη μπάρα
         SeekBar seekBarFilter = findViewById(R.id.seekBarFilter);
         TextView tvSliderLabel = findViewById(R.id.tvSliderLabel);
 
         seekBarFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Δυναμική ενημέρωση του κειμένου καθώς ο χρήστης σέρνει τη μπάρα
                 if (progress == 4) {
                     tvSliderLabel.setText("Missing ingredients: Any");
                 } else if (progress == 0) {
@@ -75,6 +84,7 @@ public class RecipeListActivity extends AppCompatActivity {
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
 
+            // εκτελούμε την αναζήτηση με το νέο όριο
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 int progress = seekBar.getProgress();
@@ -83,15 +93,24 @@ public class RecipeListActivity extends AppCompatActivity {
             }
         });
 
+        //προεπιλογή λείπει 1 υλικό
         loadRecipes(1);
     }
 
+    //φέρνει τις συνταγές που θέλει ο χρήστης με βάση το φίλτρο
     private void loadRecipes(int maxMissing) {
         new Thread(() -> {
             try {
                 SupportSQLiteDatabase sdb = db.getOpenHelper().getReadableDatabase();
                 List<Recipe> matchingRecipes = new ArrayList<>();
 
+
+                // Το query:
+                // Υπολογίζει τα συνολικά υλικά (total_ings) ανά συνταγή
+                // Υπολογίζει πόσα από αυτά τα υλικά έχει ο χρήστης(matched_ings)
+                // Βρίσκει τη διαφορά τους: (total_ings - matched_ings) = missing_ings
+                // Εφαρμόζει το φίλτρο του Slider μέσω του 'HAVING missing_ings <= maxMissing'
+                // Ταξινομεί τα αποτελέσματα ώστε πρώτα να εμφανίζονται αυτές με τις λιγότερες ελλείψεις.
                 String query = "SELECT r.id, r.name, r.desc, r.instr, r.imgsrc, r.isFavorite, " +
                         "COUNT(ri.ingredientId) AS total_ings, " +
                         "SUM(CASE WHEN i.selected = 1 THEN 1 ELSE 0 END) AS matched_ings, " +
@@ -119,6 +138,7 @@ public class RecipeListActivity extends AppCompatActivity {
                 }
 
                 runOnUiThread(() -> {
+                    // Αν δεν βρέθηκε καμία συνταγή
                     if (matchingRecipes.isEmpty()) {
                         layoutEmptyRecipes.setVisibility(View.VISIBLE);
                         recyclerRecipes.setVisibility(View.GONE);
@@ -126,6 +146,8 @@ public class RecipeListActivity extends AppCompatActivity {
                         layoutEmptyRecipes.setVisibility(View.GONE);
                         recyclerRecipes.setVisibility(View.VISIBLE);
 
+                        // Σύνδεση της λίστας με τον Adapter και ορισμός συμπεριφοράς
+                        // για μετάβαση στο RecipeDetailsActivity.
                         adapter = new TheAdapter(matchingRecipes, recipe -> {
                             Intent intent = new Intent(RecipeListActivity.this, RecipeDetailsActivity.class);
                             intent.putExtra("RECIPE_ID", recipe.id);
