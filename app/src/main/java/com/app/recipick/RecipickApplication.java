@@ -11,5 +11,4 @@ public class RecipickApplication extends Application{
         super.onCreate();
         database=AppDatabase.getInstance(this);
     }
-    public AppDatabase getDatabase(){return database;}
 }
