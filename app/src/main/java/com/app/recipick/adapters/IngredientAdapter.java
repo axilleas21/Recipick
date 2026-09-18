@@ -187,4 +187,15 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.Vi
         displayedIngredients.remove(position);
         notifyItemRemoved(position);
     }
+
+    public void selectAll() {
+        isMultiSelectMode = true;
+        selectedForDeletion.clear();
+        selectedForDeletion.addAll(displayedIngredients);
+        notifyDataSetChanged();
+
+        if (multiSelectListener != null) {
+            multiSelectListener.onSelectionChanged(true, selectedForDeletion.size()); // Η σωστή μέθοδος του interface σου
+        }
+    }
 }

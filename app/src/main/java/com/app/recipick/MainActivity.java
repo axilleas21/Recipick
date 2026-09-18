@@ -122,24 +122,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        android.widget.LinearLayout layoutMultiSelectActions = findViewById(R.id.layoutMultiSelectActions);
+        Button btnSelectAll = findViewById(R.id.btnSelectAll);
         Button btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
         View fabAddIngredient = findViewById(R.id.fabAddIngredient);
 
-        // Όταν μπαίνουμε σε Λειτουργία Διαγραφής, κρύβουμε τα άλλα κουμπιά και εμφανίζουμε το κόκκινο
+        // Όταν μπαίνουμε σε Λειτουργία Διαγραφής, εμφανίζουμε την μπάρα με τα κουμπιά Select All & Delete
         adapter.setOnMultiSelectListener((isMultiSelect, count) -> {
-            btnDeleteSelected.setVisibility(isMultiSelect ? android.view.View.VISIBLE : android.view.View.GONE);
+            layoutMultiSelectActions.setVisibility(isMultiSelect ? android.view.View.VISIBLE : android.view.View.GONE);
             fabAddIngredient.setVisibility(isMultiSelect ? android.view.View.GONE : android.view.View.VISIBLE);
 
             if (isMultiSelect) {
                 btnSearch.setVisibility(android.view.View.GONE);
                 btnDeleteSelected.setText("Delete (" + count + ")");
             } else {
-
                 checkEmptyState();
             }
         });
 
-
+       // Λειτουργία Select All
+        btnSelectAll.setOnClickListener(v -> {
+            adapter.selectAll();
+        });
 
         btnDeleteSelected.setOnClickListener(v -> {
             List<Ingredient> toDelete = adapter.getSelectedForDeletion();
