@@ -45,9 +45,13 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
             holder.itemView.setAlpha(1.0f);
             holder.tvRecipeStatus.setText("Ready to cook!");
             holder.tvRecipeStatus.setTextColor(Color.parseColor("#4CAF50"));
-        } else {
+        } else if (recipe.missingIngredients == 1) {
             holder.itemView.setAlpha(0.6f);
             holder.tvRecipeStatus.setText("Missing " + recipe.missingIngredients + " ingredient");
+            holder.tvRecipeStatus.setTextColor(Color.parseColor("#FF9800"));
+        } else {
+            holder.itemView.setAlpha(0.6f);
+            holder.tvRecipeStatus.setText("Missing " + recipe.missingIngredients + " ingredients");
             holder.tvRecipeStatus.setTextColor(Color.parseColor("#FF9800"));
         }
 

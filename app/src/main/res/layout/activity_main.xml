@@ -16,12 +16,15 @@
             android:id="@+id/tvHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="8dp"
             android:text="My Kitchen"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#212121" />
+            android:textColor="#212121"
+            android:textSize="26sp"
+            android:textStyle="bold" />
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchViewPantry"
