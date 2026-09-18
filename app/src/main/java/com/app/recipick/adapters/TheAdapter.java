@@ -1,5 +1,6 @@
 package com.app.recipick.adapters;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,22 @@ public class TheAdapter extends RecyclerView.Adapter<TheAdapter.ViewHolder> {
             holder.ivFavorite.setColorFilter(Color.parseColor("#757575")); // Γκρι
         }
 
+
+        String imageName = "recipe_" + recipe.id;
+        Context context = holder.itemView.getContext();
+
+        int resId = context.getResources().getIdentifier(
+                imageName, "drawable", context.getPackageName());
+
+        if (resId != 0) {
+            com.bumptech.glide.Glide.with(context)
+                    .load(resId)
+                    .into(holder.ivRecipeImage);
+        } else {
+            com.bumptech.glide.Glide.with(context)
+                    .load(android.R.drawable.ic_menu_gallery)
+                    .into(holder.ivRecipeImage);
+        }
 
         holder.ivFavorite.setOnClickListener(v -> {
             recipe.isFavorite = !recipe.isFavorite;

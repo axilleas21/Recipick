@@ -26,6 +26,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         TextView tvInstructions = findViewById(R.id.tvDetailInstructions);
         LinearLayout layoutIngredients = findViewById(R.id.layoutIngredientsList);
         FloatingActionButton fabFavorite = findViewById(R.id.fabDetailFavorite);
+        // Εδώ είναι το σωστό ImageView σου
         ImageView ivImage = findViewById(R.id.ivDetailImage);
 
         recipeId = getIntent().getIntExtra("RECIPE_ID", -1);
@@ -37,6 +38,18 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         tvName.setText(name);
         tvDesc.setText(desc);
         tvInstructions.setText(instructions);
+
+        // Δυναμική φόρτωση της εικόνας
+        if (recipeId != -1) {
+            String imageName = "recipe_" + recipeId;
+            int resId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+
+            if (resId != 0 && ivImage != null) {
+                com.bumptech.glide.Glide.with(this)
+                        .load(resId)
+                        .into(ivImage);
+            }
+        }
 
         updateFavoriteUI(fabFavorite);
         fabFavorite.setOnClickListener(v -> {

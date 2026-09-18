@@ -37,6 +37,7 @@ dependencies{
     implementation(libs.recyclerview)
     implementation(libs.room.runtime)
     implementation(libs.room.common)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor(libs.room.compiler)
     testImplementation(libs.room.testing)
     testImplementation(libs.junit)
