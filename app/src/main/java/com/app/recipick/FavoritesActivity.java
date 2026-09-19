@@ -84,7 +84,8 @@ public class FavoritesActivity extends AppCompatActivity {
                     "JOIN Recipe_Ingredients ri ON r.id = ri.recipeId " +
                     "JOIN Ingredient i ON ri.ingredientId = i.id " +
                     "WHERE r.isFavorite = 1 " +
-                    "GROUP BY r.id";
+                    "GROUP BY r.id " +
+                    "ORDER BY r.name";
 
             try (android.database.Cursor cursor = sdb.query(query, new Object[0])) {
                 while (cursor.moveToNext()) {
