@@ -7,6 +7,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import java.io.Serializable;
 
+//κλάση που υλοποιεί τον πίνακα Recipe της βάσης δεδομένων
 @Entity(tableName="Recipe")
 public class Recipe implements Serializable{
 

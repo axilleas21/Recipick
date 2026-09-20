@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+//κλάση που υλοποιεί τον πίνακα Ingredient της βάσης δεδομένων
 @Entity
 public class Ingredient{
     @PrimaryKey public int id;

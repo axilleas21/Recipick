@@ -10,6 +10,7 @@ import com.app.recipick.data.Recipe.Recipe;
 import com.app.recipick.data.Recipe.RecipeDao;
 import com.app.recipick.data.Recipe_Ingredients.Recipe_Ingredients;
 
+//κλάση που υλοποιεί ολόκληρο το σχήμα της βάσης δεδομένων
 @Database(entities={Recipe.class,Ingredient.class, Recipe_Ingredients.class},version=12)
 public abstract class AppDatabase extends RoomDatabase{
     public abstract IngredientDao ingredientDao();

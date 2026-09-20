@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Update;
 import java.util.List;
 
+//βοηθητική διεπιφάνεια με μεθόδους για διαχείριση και των τριών πινάκων της βάσης δεδομένων
 @Dao
 public interface GeneralDao<T>{
 

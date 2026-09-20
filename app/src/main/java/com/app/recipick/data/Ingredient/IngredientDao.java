@@ -5,6 +5,7 @@ import androidx.room.Query;
 import com.app.recipick.data.GeneralDao;
 import java.util.List;
 
+//βοηθητική διεπιφάνεια για τη διαχείριση του πίνακα Ingredients
 @Dao
 public interface IngredientDao extends GeneralDao<Ingredient>{
 
